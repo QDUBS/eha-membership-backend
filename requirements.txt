@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+passlib
+bcrypt
+python-jose
+python-multipart
+psycopg2-binary==2.9.7
+OdooRPC==0.9.0
+python-dotenv

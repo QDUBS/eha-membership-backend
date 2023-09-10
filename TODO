@@ -1,0 +1,53 @@
+STEPS:
+- Install fastapi, sqlalchemy, psycopg2-binary
+- uvicorn main:app --reload
+
+
+DATA MODELS:
+- User
+- Profile
+- Member
+- Notification
+- NewsLetterList
+- SupportTicket
+
+DEPLOYMENT STEPS:
+
+DOCKERIZING THE BACKEND APP:
+- Create a Dockerfile and add configurations
+- Build the image using command > docker build -t qdubs/eha-membership-backend
+- Push the image to Docker Hub using command > docker push qdubs/eha-membership-backend
+
+
+DEPLOYING THE BACKEND API IMAGE ON KUBERNETES:
+- Check if Minikube is running > minikube status
+- If it is not running, use > minikube start
+- To view the Minikube dashboard > minikube dashboard
+- To pause Minikube > minikube pause
+- To unpause Minikube > minikube unpause
+- To stop Minikube > minikube stop
+- Run commands > kubectl get deployments, kubectl get pods, kubectl get services, to ensure a clear cluster
+- Run > kubectl apply -f=kubernetes/backend-deployment.yaml, to create a deployment
+- Run > kubectl apply -f=kubernetes/backend-service.yaml, to create a service
+- Run > kubectl apply -f=kubernetes/backend-environment.yaml, to create a configMap
+- Then expose the service using > minikube service membership-backend-service 
+- Run command > kubectl logs -f <pod-name>, to get logs
+- Run command > kubectl describe pod <pod-name>, to get pod status
+
+
+CREATING A CONCOURSE CI PIPELINE:
+- Link: https://medium.com/concourse-ci/getting-started-with-concourse-ci-on-macos-fb3a49a8e6b4
+- Create a folder called concourse-ci and cd into that folder
+- Run the following two commands one after the other > $ curl -O https://concourse-ci.org/docker-compose.yml and $ docker-compose up -d 
+- Next install concourse fly
+- Visit: http://127.0.0.1:8080/ ad click on the Apple icon
+- Next, run commands: $ install fly /usr/local/bin, $ which fly and $ fly -v
+- Next is login. Use command > fly -t membership-backend login -c http://localhost:8080 -u test -p test
+- Then go back to http://127.0.0.1:8080/, and login using the username and password set in the previous command
+
+- Create a file for the concourse pipeline: membership-backend-pipeline.yaml
+- Add pipeline configurations
+- Run command > fly -t membership-backend set-pipeline -p membership-backend-pipeline -c membership-backend-pipeline.yaml, to upload the pipeline to Concourse
+- The command produces an output with a link: http://localhost:8080/teams/main/pipelines/membership-backend-pipeline
+- The link is used to view the Concourse pipeline
+- Next, to trigger the pipeline, run command > fly -t membership-backend trigger-job --job membership-backend-pipeline/hello-world-job --watch
